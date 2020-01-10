@@ -6,4 +6,4 @@ my hass to main hass bridge
 ## TODO
 3. slimme meter over mqtt
 4. More generic bluetooth bridge:
-  - find a method to get it all instead of per item
+    - find a method to get it all instead of per item
