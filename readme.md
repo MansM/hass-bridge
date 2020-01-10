@@ -10,6 +10,7 @@
 
 
 ## /boot/config.txt
+This is for my razberry!
 add:
 ```
 enable_uart=1
