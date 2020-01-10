@@ -1,0 +1,36 @@
+- alias: Sensor from State
+  id: sensor_from_state
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.mi_flora_moisture
+        - sensor.mi_flora_battery
+        - sensor.mi_flora_temperature
+        - sensor.mi_flora_conductivity
+        - sensor.mi_flora_light_intensity
+  condition:
+    - condition: template
+      value_template: "{{ trigger.to_state.state != trigger.from_state.state }}"
+  action:
+    - service: mqtt.publish
+      data_template:
+        topic: "homeassistant/{{ trigger.entity_id | replace('.', '/') }}/config"
+        retain: true
+        payload: >-
+          {
+            "device": {
+              "name": "{{ trigger.to_state.attributes.friendly_name }}"",
+              "connections": [["mac", "C4:7C:8D:64:3C:FD"]]
+             },
+            "name": "{{ trigger.to_state.attributes.friendly_name }}",
+            "state_topic": "homeassistant/{{ trigger.entity_id | replace('.', '/') }}/state",
+            {%- if trigger.to_state.attributes.unit_of_measurement and trigger.to_state.attributes.unit_of_measurement is defined %}
+            "unit_of_measurement": "{{ trigger.to_state.attributes.unit_of_measurement }}",
+            {%- endif %}
+            "unique_id": "{{ trigger.entity_id }}"
+          }
+    - service: mqtt.publish
+      data_template:
+        topic: "homeassistant/{{ trigger.entity_id | replace('.', '/') }}/state"
+        # retain: true
+        payload: "{{ trigger.to_state.state }}
